@@ -1,27 +1,14 @@
 from onboarding import user_inquiry # asking user what they want from the app 
 from explanations import explain_game # explains game in simple and clean sentences
+from data_loader import load_demo_game # load a single demo game's features from data/demo_games.csv.
 
-def get_demo_game_features() -> dict:
-    """
-    Temporary helper: returns hard-coded features for one demo game.
-    Later this will be replaced with real data from a CSV or API.
-    """
-    return {
-        "home_team": "VAN",
-        "away_team": "CGY",
-        "home_goals_for_last5": 3.8,
-        "away_goals_for_last5": 2.1,
-        "league_avg_goals_for_last5": 3.0,
-        "home_rest_days": 2,
-        "away_rest_days": 0,
-    }
 
 def main() -> None:
     # 1) Ask the user what they're here for
     choice = user_inquiry()
 
     # 2) For now, always use the same demo game
-    game_features = get_demo_game_features()
+    game_features = load_demo_game()
 
     print(f"\nSelected game: {game_features['home_team']} vs {game_features['away_team']}")
 
