@@ -1,5 +1,3 @@
-# src/explanations.py
-
 def explain_game(game_features: dict) -> list[str]:
     """
     Turn simple numeric features about a game into plain-English sentences.
@@ -42,7 +40,6 @@ def explain_game(game_features: dict) -> list[str]:
 
     return sentences
 
-
 def main() -> None:
     # TEMP: one hard-coded game; later this will come from real data
     game_features = {
@@ -58,7 +55,6 @@ def main() -> None:
     print(f"Explanation for {game_features['home_team']} vs {game_features['away_team']}:")
     for line in explain_game(game_features):
         print("•", line)
-
 
 if __name__ == "__main__":
     main()
