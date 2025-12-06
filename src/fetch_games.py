@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -86,24 +86,43 @@ def save_flat_games(games: List[Dict[str, Any]], label: str) -> Path:
     return out_path
 
 
+def fetch_games_for_range(start: date, end: date) -> List[Dict[str, Any]]:
+    """
+    Fetch and flatten games for every day between start and end (inclusive).
+
+    For each day, we:
+      - call the NHL schedule API
+      - save a raw JSON dump
+      - extract and append the flattened games
+    """
+    all_games: List[Dict[str, Any]] = []
+
+    current = start
+    while current <= end:
+        print(f"  - Fetching {current}...", end="")
+        schedule_json = fetch_schedule_for_date(current)
+        raw_path = save_raw_schedule(schedule_json, current.isoformat())
+        games = extract_games(schedule_json)
+        all_games.extend(games)
+        print(f" {len(games)} games (raw saved to {raw_path.name})")
+        current += timedelta(days=1)
+
+    return all_games
+
+
 def main() -> None:
-    # For now, hard-code one date that we know works
-    target = date(2025, 12, 1)
+    # Example window: one week of games
+    start = date(2025, 12, 1)
+    end = date(2025, 12, 7)
 
-    print(f"Fetching NHL schedule for {target}...")
-    schedule_json = fetch_schedule_for_date(target)
-    print("Got response with top-level keys:", list(schedule_json.keys()))
+    print(f"Fetching NHL schedule from {start} to {end}...")
+    games = fetch_games_for_range(start, end)
+    print(f"Total games fetched: {len(games)}")
 
-    raw_path = save_raw_schedule(schedule_json, target.isoformat())
-    print(f"Saved raw schedule JSON to: {raw_path}")
-
-    games = extract_games(schedule_json)
-    print(f"Extracted {len(games)} games from schedule JSON.")
-
-    flat_path = save_flat_games(games, target.isoformat())
+    label = f"{start.isoformat()}_{end.isoformat()}"
+    flat_path = save_flat_games(games, label)
     print(f"Saved flattened games JSON to: {flat_path}")
 
 
 if __name__ == "__main__":
     main()
-
